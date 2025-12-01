@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - Samer.AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000, #1a1a2e, #16213e);
+        }
+        .text-gradient {
+            background: linear-gradient(90deg, #ffffff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="gradient-bg text-white min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="flex justify-center mb-8">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-brain text-4xl text-white"></i>
+                <span class="text-3xl font-bold text-gradient">Samer.AI</span>
+            </div>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-black/50 border border-gray-800 backdrop-blur-md rounded-2xl p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-white">مرحباً بعودتك</h2>
+                <p class="text-gray-400">سجل دخولك إلى حساب Samer.AI</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-white">البريد الإلكتروني</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute right-3 top-3 text-gray-400"></i>
+                        <input 
+                            type="email" 
+                            id="email"
+                            placeholder="example@email.com" 
+                            class="bg-gray-900 border border-gray-700 text-white w-full p-3 pr-10 rounded-lg placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-white">كلمة المرور</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute right-3 top-3 text-gray-400"></i>
+                        <input 
+                            type="password" 
+                            id="password"
+                            placeholder="••••••••" 
+                            class="bg-gray-900 border border-gray-700 text-white w-full p-3 pr-10 rounded-lg placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                        <button type="button" id="togglePassword" class="absolute left-3 top-3 text-gray-400 hover:text-white">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="remember" class="border-gray-600">
+                        <label for="remember" class="text-gray-300 text-sm">تذكرني</label>
+                    </div>
+                    <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors">نسيت كلمة المرور؟</a>
+                </div>
+                
+                <button 
+                    type="submit" 
+                    class="w-full bg-white text-black hover:bg-gray-200 p-3 rounded-lg font-medium transition-colors"
+                >
+                    تسجيل الدخول
+                </button>
+                
+                <div id="loginMessage" class="text-center text-sm hidden"></div>
+                
+                <div class="text-center mt-6">
+                    <p class="text-gray-400">
+                        ليس لديك حساب؟ 
+                        <a href="register.html" class="text-white hover:text-gray-300 transition-colors">إنشاء حساب جديد</a>
+                    </p>
+                </div>
+            </form>
+            
+            <div class="mt-8 pt-6 border-t border-gray-700">
+                <p class="text-gray-500 text-sm text-center">
+                    هذا موقع ثابت مع محاكاة تسجيل الدخول باستخدام localStorage.
+                    <br>
+                    <a href="index.html" class="text-blue-400 hover:text-blue-300">العودة إلى الرئيسية</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const messageEl = document.getElementById('loginMessage');
+
+            if (!email || !password) {
+                showMessage('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+
+            const result = auth.loginUser(email, password);
+            if (result.success) {
+                showMessage('تم تسجيل الدخول بنجاح! جاري التوجيه...', 'success');
+                // Redirect to dashboard after a short delay
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                showMessage(result.message || 'فشل تسجيل الدخول', 'error');
+            }
+        });
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('loginMessage');
+            messageEl.textContent = text;
+            messageEl.className = 'text-center text-sm ' + (type === 'error' ? 'text-red-400' : 'text-green-400');
+            messageEl.classList.remove('hidden');
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 5000);
+        }
+
+        // If user is already logged in, redirect to dashboard
+        if (auth.isLoggedIn()) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

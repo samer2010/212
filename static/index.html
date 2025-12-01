@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samer.AI - الذكاء الاصطناعي الشامل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000, #1a1a2e, #16213e);
+        }
+        .text-gradient {
+            background: linear-gradient(90deg, #ffffff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="gradient-bg text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-brain text-2xl text-white"></i>
+                    <span class="text-2xl font-bold text-gradient">Samer.AI</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#features" class="hover:text-gray-300 transition-colors">المميزات</a>
+                    <a href="#search" class="hover:text-gray-300 transition-colors">البحث</a>
+                    <a href="#gallery" class="hover:text-gray-300 transition-colors">المعرض</a>
+                    <a href="login.html" class="hover:text-gray-300 transition-colors">تسجيل الدخول</a>
+                    <a href="register.html" class="bg-white text-black border-white hover:bg-gray-200 px-4 py-2 rounded-lg">إنشاء حساب</a>
+                </div>
+
+                <button id="mobile-menu-button" class="md:hidden">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (hidden by default) -->
+        <div id="mobile-menu" class="md:hidden bg-black/95 backdrop-blur-md border-b border-gray-800 hidden">
+            <div class="px-4 py-4 space-y-4">
+                <a href="#features" class="block hover:text-gray-300 transition-colors">المميزات</a>
+                <a href="#search" class="block hover:text-gray-300 transition-colors">البحث</a>
+                <a href="#gallery" class="block hover:text-gray-300 transition-colors">المعرض</a>
+                <a href="login.html" class="block hover:text-gray-300 transition-colors">تسجيل الدخول</a>
+                <a href="register.html" class="block w-full bg-white text-black border-white hover:bg-gray-200 px-4 py-2 rounded-lg text-center">إنشاء حساب</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="inline-flex items-center bg-white/10 text-white border border-white/20 rounded-full px-4 py-2 mb-6">
+                <i class="fas fa-sparkle ml-2"></i>
+                <span>مساعد ذكاء اصطناعي متقدم</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 text-gradient">
+                سامر
+                <span class="block text-3xl md:text-5xl mt-2">الذكاء الاصطناعي الشامل</span>
+            </h1>
+            
+            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                منصة ذكاء اصطناعي متكاملة توفر البحث المتقدم، إنشاء الصور، تحليل الملفات، والمساعدة الذكية في جميع جوانب حياتك الرقمية
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="dashboard.html">
+                    <button class="bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-lg text-lg font-semibold">
+                        ابدأ الآن
+                        <i class="fas fa-bolt mr-2"></i>
+                    </button>
+                </a>
+                <button class="bg-white text-black border-white hover:bg-gray-200 px-6 py-3 rounded-lg text-lg font-semibold">
+                    استكشف المميزات
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="py-16 px-4 bg-gradient-to-r from-gray-900/50 to-black/50">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-black/50 border border-gray-800 hover:border-gray-600 transition-colors rounded-xl p-6 text-center">
+                    <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">بحث ذكي</h3>
+                    <p class="text-gray-400 text-sm">ابحث عن أي شيء بذكاء اصطناعي متقدم</p>
+                </div>
+                
+                <div class="bg-black/50 border border-gray-800 hover:border-gray-600 transition-colors rounded-xl p-6 text-center">
+                    <i class="fas fa-image text-4xl text-gray-300 mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">إنشاء صور</h3>
+                    <p class="text-gray-400 text-sm">اصنع صور مذهلة بالذكاء الاصطناعي</p>
+                </div>
+                
+                <div class="bg-black/50 border border-gray-800 hover:border-gray-600 transition-colors rounded-xl p-6 text-center">
+                    <i class="fas fa-upload text-4xl text-gray-300 mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">رفع الملفات</h3>
+                    <p class="text-gray-400 text-sm">ارفع وحلل الملفات بسهولة</p>
+                </div>
+                
+                <div class="bg-black/50 border border-gray-800 hover:border-gray-600 transition-colors rounded-xl p-6 text-center">
+                    <i class="fas fa-user text-4xl text-gray-300 mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">ملف شخصي</h3>
+                    <p class="text-gray-400 text-sm">إدارة حسابك ومعلوماتك</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4 text-gradient">مميزات متقدمة</h2>
+                <p class="text-xl text-gray-300">أدوات ذكاء اصطناعي قوية لجميع احتياجاتك</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature cards -->
+                <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-xl p-6">
+                    <i class="fas fa-brain text-3xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-white mb-2">محادثة ذكية</h3>
+                    <p class="text-gray-400">تفاعل مع مساعد ذكاء اصطناعي متقدم يجيب على جميع أسئلتك</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-xl p-6">
+                    <i class="fas fa-image text-3xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-white mb-2">توليد الصور</h3>
+                    <p class="text-gray-400">أنشئ صور فريدة وعالية الجودة بالذكاء الاصطناعي</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-xl p-6">
+                    <i class="fas fa-search text-3xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-white mb-2">بحث متقدم</h3>
+                    <p class="text-gray-400">ابحث عن المعلومات بدقة وسرعة فائقة</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-xl p-6">
+                    <i class="fas fa-upload text-3xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-white mb-2">تحليل الملفات</h3>
+                    <p class="text-gray-400">ارفع الملفات واحصل على تحليل ذكي ومفيد</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-xl p-6">
+                    <i class="fas fa-shield-alt text-3xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-white mb-2">خصوصية وأمان</h3>
+                    <p class="text-gray-400">بياناتك محمية بأحدث تقنيات التشفير</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-xl p-6">
+                    <i class="fas fa-globe text-3xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-white mb-2">دعم متعدد اللغات</h3>
+                    <p class="text-gray-400">تفاعل باللغة التي تفضلها بدقة عالية</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Demo Section -->
+    <section id="search" class="py-20 px-4 bg-gradient-to-r from-gray-900/30 to-black/30">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4 text-gradient">جرب البحث الذكي</h2>
+                <p class="text-xl text-gray-300">اكتب سؤالك واحصل على إجابة فورية</p>
+            </div>
+            
+            <div class="bg-black/50 border border-gray-800 rounded-xl p-8">
+                <div class="flex gap-4">
+                    <input type="text" placeholder="ما الذي تريد البحث عنه؟ اكتب سؤالك هنا..." 
+                           class="bg-gray-900 border border-gray-700 text-white placeholder-gray-500 flex-1 p-3 rounded-lg">
+                    <button class="bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-lg">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-800 py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-brain text-2xl text-white"></i>
+                        <span class="text-xl font-bold">Samer.AI</span>
+                    </div>
+                    <p class="text-gray-400">الذكاء الاصطناعي الشامل لجميع احتياجاتك</p>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4 text-white">الخدمات</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">البحث الذكي</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">توليد الصور</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">تحليل الملفات</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">المحادثة</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4 text-white">الدعم</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">مركز المساعدة</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">الأسئلة الشائعة</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">اتصل بنا</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">الشروط والأحكام</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4 text-white">الحساب</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="login.html" class="hover:text-white transition-colors">تسجيل الدخول</a></li>
+                        <li><a href="register.html" class="hover:text-white transition-colors">إنشاء حساب</a></li>
+                        <li><a href="profile.html" class="hover:text-white transition-colors">الملف الشخصي</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">الإعدادات</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Samer.AI. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            const icon = this.querySelector('i');
+            if (menu.classList.contains('hidden')) {
+                icon.className = 'fas fa-bars text-xl';
+            } else {
+                icon.className = 'fas fa-times text-xl';
+            }
+        });
+    </script>
+</body>
+</html>
