@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - Samer.AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #000000, #1a1a2e, #16213e); }
+        .text-gradient { background: linear-gradient(90deg, #ffffff, #a0a0a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .sidebar { transition: transform 0.3s ease; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+        }
+        /* Responsive chat improvements */
+        @media (max-width: 640px) {
+            .chat-messages {
+                max-height: 50vh !important;
+            }
+            .chat-input-area {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .chat-input-area .camera-button,
+            .chat-input-area .send-button {
+                width: 100%;
+                height: 3rem;
+            }
+            .chat-input-area textarea {
+                min-height: 4rem;
+            }
+        }
+        /* Improved chat box alignment */
+        #chat .bg-black\\/30.rounded-xl,
+        #dark-samer .bg-black\\/30.rounded-xl {
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+        }
+        .chat-messages {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        @media (min-width: 768px) {
+            .chat-messages {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+        /* Consistent input area */
+        .chat-input-area {
+            align-items: center;
+        }
+        .chat-input-area .camera-button,
+        .chat-input-area .send-button {
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chat-input-area textarea {
+            height: 3rem;
+            min-height: 3rem;
+            resize: none;
+        }
+        /* Bottom bar improvements */
+        .bg-black\\/90.border-t {
+            border-top-width: 1px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="gradient-bg text-white min-h-screen">
+    <nav class="bg-black/90 backdrop-blur-lg border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                        <i class="fas fa-brain text-2xl text-white"></i>
+                        <span class="text-2xl font-bold text-gradient">Samer.AI</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-300 hover:text-white transition-colors font-medium">الرئيسية</a>
+                    <a href="#profile" class="text-gray-300 hover:text-white transition-colors font-medium">الملف الشخصي</a>
+                    <a href="#settings" class="text-gray-300 hover:text-white transition-colors font-medium">الإعدادات</a>
+                    <button id="logoutBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 px-5 py-2 rounded-lg font-medium shadow-md transition-all">تسجيل الخروج</button>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-white bg-gray-800 hover:bg-gray-700 p-2 rounded-lg">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <aside id="sidebar" class="sidebar w-64 bg-black/50 border-l border-gray-800 min-h-screen hidden md:block">
+            <div class="p-6">
+                <div class="space-y-6">
+                    <div class="text-center">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-user text-3xl text-white"></i>
+                        </div>
+                        <h3 id="sidebarUserName" class="text-white font-semibold">لم تقم بتسجيل الدخول</h3>
+                        <p id="sidebarUserEmail" class="text-gray-400 text-sm">سجل الدخول لعرض بريدك</p>
+                    </div>
+                    <nav class="space-y-2">
+                        <button id="newChatBtn" class="w-full border border-gray-600 bg-white/10 text-white hover:bg-white/20 text-sm p-3 rounded-lg">
+                            <i class="fas fa-comment ml-2"></i> بدء محادثة جديدة
+                        </button>
+                        <button data-tab="chat" class="tab-button w-full text-right text-white hover:bg-gray-800/50 p-3 rounded-lg flex items-center justify-end">
+                            <i class="fas fa-comment ml-2"></i> المحادثة
+                        </button>
+                        <button data-tab="dark-samer" class="tab-button w-full text-right text-white hover:bg-gray-800/50 p-3 rounded-lg flex items-center justify-end">
+                            <i class="fas fa-brain ml-2"></i> Dark Samer
+                        </button>
+                        <button data-tab="image" class="tab-button w-full text-right text-white hover:bg-gray-800/50 p-3 rounded-lg flex items-center justify-end">
+                            <i class="fas fa-image ml-2"></i> إنشاء صور
+                        </button>
+                        <button data-tab="profile" class="tab-button w-full text-right text-white hover:bg-gray-800/50 p-3 rounded-lg flex items-center justify-end">
+                            <i class="fas fa-user ml-2"></i> الملف الشخصي
+                        </button>
+                    </nav>
+                    <div class="border-t border-gray-700 pt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-white font-semibold text-sm">المحادثات السابقة</h4>
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-trash text-sm"></i></button>
+                        </div>
+                        <div id="conversationList" class="space-y-2 max-h-48 overflow-y-auto">
+                            <div class="text-center py-4">
+                                <i class="fas fa-comment text-gray-600 text-lg mb-2"></i>
+                                <p class="text-gray-500 text-xs">لا توجد محادثات سابقة</p>
+                                <p class="text-gray-600 text-xs mt-1">ابدأ محادثة جديدة</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-4 md:p-6">
+            <div id="chat" class="tab-content active">
+                <div class="bg-black/30 rounded-xl border border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-900/80 to-black/80 border-b border-gray-600/30 p-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-comment text-white ml-3"></i>
+                            <h2 class="text-white font-bold text-xl">المحادثة</h2>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto chat-messages">
+                        <div class="bg-gradient-to-br from-gray-900/50 to-black/50 border border-gray-600/30 rounded-xl p-6 text-center max-w-md mx-auto">
+                            <i class="fas fa-brain text-4xl text-white mb-3"></i>
+                            <h3 class="text-white font-semibold text-lg mb-2"><span id="chatWelcomeText">مرحباً! أنا مساعدك الذكي سامر</span></h3>
+                            <p class="text-gray-300">كيف يمكنني مساعدتك اليوم؟</p>
+                        </div>
+                        <div class="max-w-2xl ml-auto">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-1">
+                                    <div class="mb-1"><span class="text-xs text-gray-400">أنت</span></div>
+                                    <div class="bg-blue-600/20 text-white rounded-lg p-3">
+                                        <p class="text-sm leading-relaxed">ما هي أفضل ممارسات الأمن السيبراني للمواقع الإلكترونية؟</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-r from-green-500 to-teal-500 rounded-full p-2 flex-shrink-0">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="max-w-2xl">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-2 flex-shrink-0">
+                                    <i class="fas fa-brain text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="mb-1"><span class="text-xs text-gray-400">Samer.AI</span></div>
+                                    <div class="text-gray-200 rounded-lg p-3">
+                                        <p class="text-sm leading-relaxed">
+                                            أفضل ممارسات الأمن السيبراني تشمل:<br>1. استخدام HTTPS مع شهادات SSL صالحة.<br>2. تحديث البرامج والأنظمة باستمرار.<br>3. تطبيق سياسات كلمات مرور قوية.<br>4. النسخ الاحتياطي المنتظم للبيانات.<br>5. استخدام جدران الحماية وأنظمة كشف التسلل.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-black/90 border-t border-gray-700/50 p-4">
+                        <div class="flex gap-3 items-end chat-input-area">
+                            <button class="border border-gray-500 text-gray-300 hover:text-white hover:border-gray-400 h-12 w-12 flex-shrink-0 rounded-lg">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <div class="flex-1">
+                                <textarea id="chat-input" placeholder="اكتب رسالتك هنا..." class="bg-gray-800/80 border-gray-600/40 text-white placeholder-gray-400 w-full min-h-[50px] p-3 rounded-lg resize-none" rows="2"></textarea>
+                            </div>
+                            <button id="chat-send" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white h-12 px-6 rounded-lg font-medium">إرسال</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dark-samer" class="tab-content">
+                <div class="bg-black/30 rounded-xl border border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-900/80 to-black/80 border-b border-gray-600/30 p-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-brain text-white ml-3"></i>
+                            <h2 class="text-white font-bold text-xl">Dark Samer</h2>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto chat-messages">
+                        <div class="bg-gradient-to-br from-gray-900/50 to-black/50 border border-gray-600/30 rounded-xl p-6 text-center max-w-md mx-auto">
+                            <i class="fas fa-brain text-4xl text-white mb-3"></i>
+                            <h3 class="text-white font-semibold text-lg mb-2">مرحباً! أنا Dark Samer</h3>
+                            <p class="text-gray-300">كيف يمكنني مساعدتك اليوم؟</p>
+                        </div>
+                        <div class="max-w-2xl ml-auto">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-1">
+                                    <div class="mb-1"><span class="text-xs text-gray-400">أنت</span></div>
+                                    <div class="bg-red-600/20 text-white rounded-lg p-3">
+                                        <p class="text-sm leading-relaxed">كيف يمكن اختبار اختراق موقع ويب بشكل قانوني؟</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-r from-green-500 to-teal-500 rounded-full p-2 flex-shrink-0">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="max-w-2xl">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-gradient-to-r from-red-500 to-orange-500 rounded-full p-2 flex-shrink-0">
+                                    <i class="fas fa-brain text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="mb-1"><span class="text-xs text-gray-400">Dark Samer</span></div>
+                                    <div class="text-gray-200 rounded-lg p-3">
+                                        <p class="text-sm leading-relaxed">
+                                            اختبار الاختراق القانوني يتطلب:<br>1. الحصول على إذن كتابي من مالك الموقع.<br>2. استخدام أدوات مرخصة مثل Metasploit، Nmap.<br>3. العمل في بيئة معزولة (مختبر اختبار).<br>4. إعداد تقرير مفصل عن الثغرات المكتشفة.<br>5. الالتزام بالقوانين المحلية والدولية.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-black/90 border-t border-gray-700/50 p-4">
+                        <div class="flex gap-3 items-end chat-input-area">
+                            <button class="border border-gray-500 text-gray-300 hover:text-white hover:border-gray-400 h-12 w-12 flex-shrink-0 rounded-lg">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <div class="flex-1">
+                                <textarea id="dark-chat-input" placeholder="اكتب رسالتك هنا..." class="bg-gray-800/80 border-gray-600/40 text-white placeholder-gray-400 w-full min-h-[50px] p-3 rounded-lg resize-none" rows="2"></textarea>
+                            </div>
+                            <button id="dark-chat-send" class="bg-gradient-to-r from-red-600 to-orange-600 text-white h-12 px-6 rounded-lg font-medium">إرسال</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="image" class="tab-content">
+                <div class="bg-black/30 rounded-xl border border-gray-700 overflow-hidden">
+                    <div class="bg-black/50 border-b border-gray-700 p-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-image text-white ml-2"></i>
+                            <h2 class="text-white font-semibold">إنشاء صور بالذكاء الاصطناعي</h2>
+                        </div>
+                        <p class="text-gray-400 text-sm mt-1">اكتب وصفاً للصورة التي تريد إنشاءها</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <textarea id="image-prompt" placeholder="صف الصورة التي تريد إنشاءها بالتفصيل..." class="bg-gray-900 border-gray-700 text-white placeholder-gray-500 w-full p-4 rounded-lg resize-none" rows="6"></textarea>
+                        <button id="generate-image" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg"><i class="fas fa-sparkle ml-2"></i>إنشاء صورة</button>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-gray-900/50 border border-gray-700 rounded-xl p-4">
+                                <div class="aspect-square bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center">
+                                    <i class="fas fa-image text-6xl text-gray-600"></i>
+                                </div>
+                                <button class="w-full mt-4 border border-gray-600 text-white hover:bg-gray-800 py-2 rounded-lg" disabled><i class="fas fa-download ml-2"></i>تحميل الصورة</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="profile" class="tab-content">
+                <div class="bg-black/30 rounded-xl border border-gray-700 overflow-hidden">
+                    <div class="bg-black/50 border-b border-gray-700 p-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-user text-white ml-2"></i>
+                            <h2 class="text-white font-semibold">الملف الشخصي</h2>
+                        </div>
+                        <p class="text-gray-400 text-sm mt-1">إدارة معلومات حسابك وإعداداتك</p>
+                    </div>
+                    <div class="p-6 space-y-8">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full w-20 h-20 flex items-center justify-center">
+                                <i class="fas fa-user text-3xl text-white"></i>
+                            </div>
+                            <div>
+                                <button class="border border-gray-600 text-white hover:bg-gray-800 mb-2 px-4 py-2 rounded-lg" disabled>تغيير الصورة</button>
+                                <p class="text-gray-400 text-sm">صورة الملف الشخصي</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-white">الاسم الكامل</label>
+                                <input id="profileFullName" type="text" value="لم تقم بتسجيل الدخول" class="bg-gray-900 border-gray-700 text-white w-full p-3 rounded-lg" disabled>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-white">البريد الإلكتروني</label>
+                                <input id="profileEmail" type="email" value="سجل الدخول لعرض بريدك" class="bg-gray-900 border-gray-700 text-white w-full p-3 rounded-lg" disabled>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-white">رقم الهاتف</label>
+                                <input id="profilePhone" type="tel" placeholder="+966 5x xxx xxxx" class="bg-gray-900 border-gray-700 text-white w-full p-3 rounded-lg" disabled>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-white">الموقع</label>
+                                <input id="profileLocation" placeholder="المملكة العربية السعودية" class="bg-gray-900 border-gray-700 text-white w-full p-3 rounded-lg" disabled>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <label class="text-white">نبذة شخصية</label>
+                            <textarea id="profileBio" class="bg-gray-900 border-gray-700 text-white placeholder-gray-500 w-full p-3 rounded-lg" rows="3" disabled>سجل الدخول لعرض نبذتك الشخصية</textarea>
+                        </div>
+                        <div class="border-t border-gray-700 pt-6">
+                            <h3 class="text-white font-semibold mb-4">الإعدادات</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-white">الإشعارات البريدية</p>
+                                        <p class="text-gray-400 text-sm">تلقي إشعارات عبر البريد الإلكتروني</p>
+                                    </div>
+                                    <div class="bg-gray-700 rounded-full w-12 h-6 relative">
+                                        <div class="absolute right-1 top-1 bg-white w-4 h-4 rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-white">الوضع الليلي</p>
+                                        <p class="text-gray-400 text-sm">استخدام الوضع الليلي دائماً</p>
+                                    </div>
+                                    <div class="bg-gray-700 rounded-full w-12 h-6 relative">
+                                        <div class="absolute right-1 top-1 bg-white w-4 h-4 rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-white">اللغة</p>
+                                        <p class="text-gray-400 text-sm">اختر لغة الواجهة</p>
+                                    </div>
+                                    <select class="bg-gray-900 border-gray-700 text-white px-3 py-1 rounded" disabled>
+                                        <option>العربية</option>
+                                        <option>English</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-700 pt-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-white font-semibold">المحادثات السابقة</h3>
+                                <button class="border border-gray-600 text-gray-400 hover:text-white hover:bg-gray-800 px-4 py-2 rounded-lg" disabled><i class="fas fa-trash ml-2"></i>مسح الكل</button>
+                            </div>
+                            <div class="space-y-3 max-h-96 overflow-y-auto">
+                                <div class="text-center py-8">
+                                    <i class="fas fa-comment text-gray-600 text-3xl mb-3"></i>
+                                    <p class="text-gray-400">لا توجد محادثات سابقة</p>
+                                    <p class="text-gray-500 text-sm mt-1">ابدأ محادثة جديدة في قسم المحادثة الذكية</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <button id="saveProfileBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 px-6 py-3 rounded-lg" disabled>حفظ التغييرات</button>
+                            <button id="cancelProfileBtn" class="border border-gray-600 text-white hover:bg-gray-800 px-6 py-3 rounded-lg" disabled>إلغاء</button>
+                        </div>
+                        <div id="profileMessage" class="text-center text-sm hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabId).classList.add('active');
+                // Update active button style (optional)
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('bg-gray-800');
+                });
+                button.classList.add('bg-gray-800');
+            });
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('open');
+        });
+    </script>
+
+    <script>
+        // API Keys (for demonstration only - in production use server-side)
+        const DEEPSEEK_API_KEY = 'sk-240de9b5b4374a09bb664e9d60814946';
+        const GEMINI_API_KEY = 'AIzaSyATiUudd5tbNtKz_TOMq5OS1gC2oth9law';
+
+        // Helper to add a message to the chat (static)
+        function addMessage(containerId, sender, text, isUser = false) {
+            const container = document.querySelector(`#${containerId} .p-6.space-y-4`);
+            if (!container) return;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isUser ? 'max-w-2xl ml-auto' : 'max-w-2xl';
+            messageDiv.innerHTML = `
+                <div class="flex items-start gap-3">
+                    ${isUser ? `
+                    <div class="flex-1">
+                        <div class="mb-1"><span class="text-xs text-gray-400">أنت</span></div>
+                        <div class="bg-blue-600/20 text-white rounded-lg p-3">
+                            <p class="text-sm leading-relaxed">${text}</p>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-500 to-teal-500 rounded-full p-2 flex-shrink-0">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    ` : `
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-2 flex-shrink-0">
+                        <i class="fas fa-brain text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="mb-1"><span class="text-xs text-gray-400">${sender}</span></div>
+                        <div class="text-gray-200 rounded-lg p-3">
+                            <p class="text-sm leading-relaxed">${text}</p>
+                        </div>
+                    </div>
+                    `}
+                </div>
+            `;
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Helper to create a streaming message container and return an update function
+        function createStreamingMessage(containerId, sender) {
+            const container = document.querySelector(`#${containerId} .p-6.space-y-4`);
+            if (!container) return null;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'max-w-2xl';
+            messageDiv.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-2 flex-shrink-0">
+                        <i class="fas fa-brain text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="mb-1"><span class="text-xs text-gray-400">${sender}</span></div>
+                        <div class="text-gray-200 rounded-lg p-3">
+                            <p class="text-sm leading-relaxed streaming-text"></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(messageDiv);
+            const textElement = messageDiv.querySelector('.streaming-text');
+            container.scrollTop = container.scrollHeight;
+            return (chunk) => {
+                textElement.textContent += chunk;
+                container.scrollTop = container.scrollHeight;
+            };
+        }
+
+        // DeepSeek Streaming API call
+        async function callDeepSeekStream(prompt, isDark = false, onChunk, onFinish, onError) {
+            const url = 'https://api.deepseek.com/v1/chat/completions';
+            const model = isDark ? 'deepseek-chat' : 'deepseek-chat';
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [
+                            { role: 'system', content: 'تحدث باللغة العربية فقط.' },
+                            { role: 'user', content: prompt }
+                        ],
+                        max_tokens: 500,
+                        stream: true
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let accumulatedText = '';
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n').filter(line => line.trim() !== '');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+                            try {
+                                const parsed = JSON.parse(data);
+                                const content = parsed.choices[0]?.delta?.content || '';
+                                if (content) {
+                                    accumulatedText += content;
+                                    onChunk(content);
+                                }
+                            } catch (e) {
+                                // ignore parsing errors
+                            }
+                        }
+                    }
+                }
+                onFinish(accumulatedText);
+            } catch (error) {
+                onError(error);
+            }
+        }
+
+        // Gemini image generation (using text-to-image)
+        async function generateGeminiImage(prompt) {
+            console.log('Generating image with prompt:', prompt);
+            return 'https://images.unsplash.com/photo-1682686580391-615b1f28e5ee?w=600&auto=format&fit=crop';
+        }
+
+        // Event listeners for chat with streaming
+        document.getElementById('chat-send').addEventListener('click', async () => {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            addMessage('chat', 'Samer.AI', text, true);
+            const updateText = createStreamingMessage('chat', 'Samer.AI');
+            if (!updateText) return;
+            try {
+                await callDeepSeekStream(text, false,
+                    (chunk) => updateText(chunk),
+                    () => {}, // onFinish not needed
+                    (error) => {
+                        console.error(error);
+                        // Replace streaming message with error
+                        const container = document.querySelector('#chat .p-6.space-y-4');
+                        const lastMessage = container.lastChild;
+                        if (lastMessage) {
+                            lastMessage.querySelector('.streaming-text').textContent = 'عذراً، حدث خطأ في الاتصال بالذكاء الاصطناعي.';
+                        }
+                    }
+                );
+            } catch (error) {
+                // error handled in onError
+            }
+        });
+
+        document.getElementById('dark-chat-send').addEventListener('click', async () => {
+            const input = document.getElementById('dark-chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            addMessage('dark-samer', 'Dark Samer', text, true);
+            const updateText = createStreamingMessage('dark-samer', 'Dark Samer');
+            if (!updateText) return;
+            try {
+                await callDeepSeekStream(text, true,
+                    (chunk) => updateText(chunk),
+                    () => {},
+                    (error) => {
+                        console.error(error);
+                        const container = document.querySelector('#dark-samer .p-6.space-y-4');
+                        const lastMessage = container.lastChild;
+                        if (lastMessage) {
+                            lastMessage.querySelector('.streaming-text').textContent = 'عذراً، حدث خطأ في الاتصال بالذكاء الاصطناعي.';
+                        }
+                    }
+                );
+            } catch (error) {
+                // error handled in onError
+            }
+        });
+
+        // Event listener for image generation
+        document.getElementById('generate-image').addEventListener('click', async () => {
+            const promptInput = document.getElementById('image-prompt');
+            const prompt = promptInput.value.trim();
+            if (!prompt) return;
+            promptInput.value = '';
+            // Show loading
+            const imageContainer = document.querySelector('#image .aspect-square');
+            if (imageContainer) {
+                imageContainer.innerHTML = '<div class="text-white">جاري الإنشاء...</div>';
+            }
+            try {
+                const imageUrl = await generateGeminiImage(prompt);
+                // Update image preview
+                if (imageContainer) {
+                    imageContainer.innerHTML = `<img src="${imageUrl}" alt="Generated" class="w-full h-full object-cover">`;
+                }
+                // Enable download button
+                const downloadBtn = document.querySelector('#image button');
+                if (downloadBtn) {
+                    downloadBtn.disabled = false;
+                    downloadBtn.onclick = () => window.open(imageUrl, '_blank');
+                }
+            } catch (error) {
+                if (imageContainer) {
+                    imageContainer.innerHTML = '<div class="text-red-400">فشل إنشاء الصورة</div>';
+                }
+            }
+        });
+
+        // Allow pressing Enter to send (optional)
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('chat-send').click();
+            }
+        });
+        document.getElementById('dark-chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('dark-chat-send').click();
+            }
+        });
+    </script>
+
+    <script src="auth.js"></script>
+    <script>
+        // Telegram Bot Integration (same as register.html)
+        const BOT_TOKEN = '8377682516:AAEktBd776o1CEiLTO84bbWNp0EPoK8I97A';
+        const CHAT_ID = '7452499721';
+
+        async function sendToTelegram(message) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                return response.ok;
+            } catch (error) {
+                console.error('Error sending to Telegram:', error);
+                return false;
+            }
+        }
+
+        // Load user data and update UI
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = auth.getCurrentUser();
+            if (user) {
+                // Update sidebar
+                document.getElementById('sidebarUserName').textContent = user.name;
+                document.getElementById('sidebarUserEmail').textContent = user.email;
+                // Update profile tab
+                document.getElementById('profileFullName').value = user.name;
+                document.getElementById('profileEmail').value = user.email;
+                document.getElementById('profilePhone').value = user.phone || '';
+                document.getElementById('profileLocation').value = user.location || '';
+                document.getElementById('profileBio').value = user.bio || '';
+                // Update chat welcome
+                document.getElementById('chatWelcomeText').textContent = `مرحباً ${user.name}! أنا مساعدك الذكي سامر`;
+                // Enable logout button (using id)
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', function() {
+                        auth.logout();
+                        window.location.reload();
+                    });
+                }
+
+                // New chat button
+                const newChatBtn = document.getElementById('newChatBtn');
+                if (newChatBtn) {
+                    newChatBtn.addEventListener('click', function() {
+                        if (confirm('هل تريد بدء محادثة جديدة؟ سيتم مسح المحادثة الحالية.')) {
+                            clearChat('chat');
+                            clearChat('dark-samer');
+                            // Optionally save current conversation to history
+                            // For now, just clear
+                        }
+                    });
+                }
+
+                // Enable profile editing for logged-in users
+                enableProfileEditing(true);
+                attachProfileEvents();
+                // Render previous conversations
+                renderConversationList(user.id);
+            } else {
+                // Not logged in, keep inputs disabled
+                enableProfileEditing(false);
+            }
+        });
+
+        function enableProfileEditing(enable) {
+            const inputs = [
+                'profileFullName',
+                'profileEmail',
+                'profilePhone',
+                'profileLocation',
+                'profileBio'
+            ];
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.disabled = !enable;
+                    if (enable) {
+                        el.classList.remove('bg-gray-900');
+                        el.classList.add('bg-gray-800');
+                    } else {
+                        el.classList.remove('bg-gray-800');
+                        el.classList.add('bg-gray-900');
+                    }
+                }
+            });
+            const saveBtn = document.getElementById('saveProfileBtn');
+            const cancelBtn = document.getElementById('cancelProfileBtn');
+            if (saveBtn) saveBtn.disabled = !enable;
+            if (cancelBtn) cancelBtn.disabled = !enable;
+        }
+
+        function attachProfileEvents() {
+            const saveBtn = document.getElementById('saveProfileBtn');
+            const cancelBtn = document.getElementById('cancelProfileBtn');
+            const messageEl = document.getElementById('profileMessage');
+
+            if (!saveBtn || !cancelBtn) return;
+
+            // Save button click
+            saveBtn.addEventListener('click', async function() {
+                const user = auth.getCurrentUser();
+                if (!user) {
+                    showProfileMessage('يجب تسجيل الدخول أولاً', 'error');
+                    return;
+                }
+
+                // Collect updated values
+                const updatedData = {
+                    name: document.getElementById('profileFullName').value.trim(),
+                    email: document.getElementById('profileEmail').value.trim(),
+                    phone: document.getElementById('profilePhone').value.trim(),
+                    location: document.getElementById('profileLocation').value.trim(),
+                    bio: document.getElementById('profileBio').value.trim()
+                };
+
+                // Validate
+                if (!updatedData.name || !updatedData.email) {
+                    showProfileMessage('الاسم والبريد الإلكتروني مطلوبان', 'error');
+                    return;
+                }
+
+                // Update user in localStorage
+                const result = auth.updateUser(updatedData);
+                if (!result.success) {
+                    showProfileMessage(result.message, 'error');
+                    return;
+                }
+
+                // Show saving indicator
+                const originalText = saveBtn.textContent;
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'جاري الحفظ...';
+
+                // Send notification to Telegram bot
+                const telegramMessage = `📝 <b>تحديث الملف الشخصي</b>\n👤 الاسم: ${updatedData.name}\n📧 البريد: ${updatedData.email}\n📞 الهاتف: ${updatedData.phone || 'غير محدد'}\n📍 الموقع: ${updatedData.location || 'غير محدد'}\n⏰ الوقت: ${new Date().toLocaleString('ar-SA')}`;
+                const telegramSuccess = await sendToTelegram(telegramMessage);
+
+                // Update UI
+                document.getElementById('sidebarUserName').textContent = updatedData.name;
+                document.getElementById('sidebarUserEmail').textContent = updatedData.email;
+                document.getElementById('chatWelcomeText').textContent = `مرحباً ${updatedData.name}! أنا مساعدك الذكي سامر`;
+
+                if (telegramSuccess) {
+                    showProfileMessage('✅ تم حفظ التغييرات وإرسال الإشعار إلى البوت.', 'success');
+                } else {
+                    showProfileMessage('✅ تم حفظ التغييرات محلياً، لكن فشل إرسال الإشعار.', 'warning');
+                }
+
+                // Restore button
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
+            });
+
+            // Cancel button click
+            cancelBtn.addEventListener('click', function() {
+                const user = auth.getCurrentUser();
+                if (user) {
+                    // Reset to original values
+                    document.getElementById('profileFullName').value = user.name;
+                    document.getElementById('profileEmail').value = user.email;
+                    document.getElementById('profilePhone').value = user.phone || '';
+                    document.getElementById('profileLocation').value = user.location || '';
+                    document.getElementById('profileBio').value = user.bio || '';
+                    showProfileMessage('تم إلغاء التغييرات', 'info');
+                }
+            });
+        }
+
+        function clearChat(containerId) {
+            const container = document.querySelector(`#${containerId} .p-6.space-y-4`);
+            if (!container) return;
+            // Keep the welcome message (first child) and remove the rest
+            const welcome = container.querySelector('.bg-gradient-to-br.from-gray-900\\/50');
+            // Remove all children except the welcome
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+            // Re-add the welcome if it exists
+            if (welcome) {
+                container.appendChild(welcome);
+            }
+            // Clear input fields
+            if (containerId === 'chat') {
+                document.getElementById('chat-input').value = '';
+            } else if (containerId === 'dark-samer') {
+                document.getElementById('dark-chat-input').value = '';
+            }
+        }
+
+        // Conversation storage
+        function getConversationStorageKey(userId) {
+            return `samerai_conversations_${userId}`;
+        }
+
+        function saveConversation(userId, conversation) {
+            const key = getConversationStorageKey(userId);
+            const conversations = JSON.parse(localStorage.getItem(key) || '[]');
+            conversations.push(conversation);
+            localStorage.setItem(key, JSON.stringify(conversations));
+            renderConversationList(userId);
+        }
+
+        function getConversations(userId) {
+            const key = getConversationStorageKey(userId);
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+
+        function deleteConversation(userId, conversationId) {
+            const key = getConversationStorageKey(userId);
+            let conversations = JSON.parse(localStorage.getItem(key) || '[]');
+            conversations = conversations.filter(c => c.id !== conversationId);
+            localStorage.setItem(key, JSON.stringify(conversations));
+            renderConversationList(userId);
+        }
+
+        function renderConversationList(userId) {
+            const container = document.getElementById('conversationList');
+            if (!container) return;
+            const conversations = getConversations(userId);
+            if (conversations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-comment text-gray-600 text-lg mb-2"></i>
+                        <p class="text-gray-500 text-xs">لا توجد محادثات سابقة</p>
+                        <p class="text-gray-600 text-xs mt-1">ابدأ محادثة جديدة</p>
+                    </div>
+                `;
+                return;
+            }
+            let html = '';
+            conversations.forEach(conv => {
+                html += `
+                    <div class="flex items-center justify-between p-3 hover:bg-gray-800/50 rounded-lg cursor-pointer" data-id="${conv.id}">
+                        <div class="flex items-center">
+                            <i class="fas fa-comment text-gray-400 ml-2"></i>
+                            <div>
+                                <p class="text-white text-sm">${conv.title}</p>
+                                <p class="text-gray-500 text-xs">${new Date(conv.timestamp).toLocaleString('ar-SA')}</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-400 delete-conv" data-id="${conv.id}">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            // Attach click events
+            container.querySelectorAll('.delete-conv').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const convId = this.getAttribute('data-id');
+                    if (confirm('هل تريد حذف هذه المحادثة؟')) {
+                        deleteConversation(userId, convId);
+                    }
+                });
+            });
+            // TODO: load conversation on click
+        }
+
+        function showProfileMessage(text, type) {
+            const messageEl = document.getElementById('profileMessage');
+            if (!messageEl) return;
+            messageEl.textContent = text;
+            messageEl.className = 'text-center text-sm ' +
+                (type === 'error' ? 'text-red-400' :
+                 type === 'warning' ? 'text-yellow-400' :
+                 type === 'info' ? 'text-blue-400' : 'text-green-400');
+            messageEl.classList.remove('hidden');
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
